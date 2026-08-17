@@ -80,9 +80,11 @@ Open your browser and go to:
 
 Example:
 
-![Booking Form](./c:\Users\RAKSHITHA ACHAR\OneDrive\Pictures\post.png)
+![Booking Form](screenshots/post.png)
 
-![Successful Booking](./c:\Users\RAKSHITHA ACHAR\OneDrive\Pictures\screenshot.png\Screenshot 2026-08-17 234126.png)
+![Successful Booking](screenshots/get.png)
+
+
 
 # Short Explanation
 
