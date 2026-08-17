@@ -1,0 +1,214 @@
+const express = require('express');
+const cors = require('cors');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// In-Memory Database Seed Data
+let events = [
+  {
+    id: 'evt-101',
+    name: 'Sri Tirupati Balaji Special Darshan',
+    location: 'Tirupati, Andhra Pradesh',
+    date: '2026-09-01',
+    sessions: [
+      { id: 'ses-1', timing: '06:00 AM - 09:00 AM', totalCapacity: 100, bookedCount: 45 },
+      { id: 'ses-2', timing: '10:00 AM - 01:00 PM', totalCapacity: 150, bookedCount: 148 },
+      { id: 'ses-3', timing: '04:00 PM - 07:00 PM', totalCapacity: 120, bookedCount: 30 }
+    ]
+  },
+  {
+    id: 'evt-102',
+    name: 'Maha Aarti & Cultural Evening',
+    location: 'Varanasi Ghat, Uttar Pradesh',
+    date: '2026-09-05',
+    sessions: [
+      { id: 'ses-4', timing: '06:30 PM - 08:30 PM', totalCapacity: 200, bookedCount: 85 }
+    ]
+  }
+];
+
+let bookings = [
+  {
+    id: 'BK-1001',
+    eventId: 'evt-101',
+    eventName: 'Sri Tirupati Balaji Special Darshan',
+    sessionId: 'ses-2',
+    sessionTiming: '10:00 AM - 01:00 PM',
+    date: '2026-09-01',
+    visitorName: 'Ramesh Kumar',
+    contactNumber: '9876543210',
+    email: 'ramesh@example.com',
+    visitorCount: 2,
+    status: 'CONFIRMED',
+    createdAt: new Date().toISOString()
+  }
+];
+
+// Helper: Find Session
+function getEventAndSession(eventId, sessionId) {
+  const event = events.find(e => e.id === eventId);
+  if (!event) return { event: null, session: null };
+  const session = event.sessions.find(s => s.id === sessionId);
+  return { event, session };
+}
+
+// 1. Get All Events & Sessions
+app.get('/api/events', (req, res) => {
+  return res.status(200).json({ success: true, data: events });
+});
+
+// 2. Get All Bookings (with Search & Status Filter)
+app.get('/api/bookings', (req, res) => {
+  const { search, status } = req.query;
+  let result = [...bookings];
+
+  if (status && status !== 'ALL') {
+    result = result.filter(b => b.status === status.toUpperCase());
+  }
+
+  if (search) {
+    const term = search.toLowerCase();
+    result = result.filter(b => 
+      b.visitorName.toLowerCase().includes(term) ||
+      b.id.toLowerCase().includes(term) ||
+      b.contactNumber.includes(term)
+    );
+  }
+
+  return res.status(200).json({ success: true, count: result.length, data: result });
+});
+
+// 3. Get Single Booking Detail
+app.get('/api/bookings/:id', (req, res) => {
+  const booking = bookings.find(b => b.id === req.params.id);
+  if (!booking) {
+    return res.status(404).json({ success: false, message: 'Booking reference not found.' });
+  }
+  return res.status(200).json({ success: true, data: booking });
+});
+
+// 4. Create New Booking
+app.post('/api/bookings', (req, res) => {
+  const { eventId, sessionId, visitorName, contactNumber, email, visitorCount } = req.body;
+
+  // Server Validation
+  if (!eventId || !sessionId || !visitorName || !contactNumber || !visitorCount) {
+    return res.status(400).json({ success: false, message: 'All required fields must be provided.' });
+  }
+
+  const count = parseInt(visitorCount, 10);
+  if (isNaN(count) || count < 1 || count > 10) {
+    return res.status(400).json({ success: false, message: 'Visitor count must be between 1 and 10 per booking.' });
+  }
+
+  const { event, session } = getEventAndSession(eventId, sessionId);
+  if (!event || !session) {
+    return res.status(404).json({ success: false, message: 'Selected event or time session does not exist.' });
+  }
+
+  // Capacity Check
+  const remainingSlots = session.totalCapacity - session.bookedCount;
+  if (count > remainingSlots) {
+    return res.status(409).json({ 
+      success: false, 
+      message: `Overbooking prevented. Only ${remainingSlots} slot(s) available for this session.` 
+    });
+  }
+
+  // Deduct capacity & store booking
+  session.bookedCount += count;
+  const newBooking = {
+    id: `BK-${Math.floor(1000 + Math.random() * 9000)}`,
+    eventId,
+    eventName: event.name,
+    sessionId,
+    sessionTiming: session.timing,
+    date: event.date,
+    visitorName: visitorName.trim(),
+    contactNumber: contactNumber.trim(),
+    email: (email || '').trim(),
+    visitorCount: count,
+    status: 'CONFIRMED',
+    createdAt: new Date().toISOString()
+  };
+
+  bookings.unshift(newBooking);
+  return res.status(201).json({ success: true, message: 'Booking confirmed successfully!', data: newBooking });
+});
+
+// 5. Update Booking Details
+app.put('/api/bookings/:id', (req, res) => {
+  const booking = bookings.find(b => b.id === req.params.id);
+  if (!booking) {
+    return res.status(404).json({ success: false, message: 'Booking record not found.' });
+  }
+
+  if (booking.status === 'CANCELLED') {
+    return res.status(400).json({ success: false, message: 'Cannot update a cancelled booking.' });
+  }
+
+  const { visitorName, contactNumber, newVisitorCount } = req.body;
+  const { session } = getEventAndSession(booking.eventId, booking.sessionId);
+
+  if (newVisitorCount && newVisitorCount !== booking.visitorCount) {
+    const diff = newVisitorCount - booking.visitorCount;
+    const remainingSlots = session.totalCapacity - session.bookedCount;
+
+    if (diff > 0 && diff > remainingSlots) {
+      return res.status(409).json({ success: false, message: `Cannot increase visitors. Only ${remainingSlots} slots remaining.` });
+    }
+    session.bookedCount += diff;
+    booking.visitorCount = newVisitorCount;
+  }
+
+  if (visitorName) booking.visitorName = visitorName.trim();
+  if (contactNumber) booking.contactNumber = contactNumber.trim();
+
+  return res.status(200).json({ success: true, message: 'Booking updated successfully.', data: booking });
+});
+
+// 6. Update Booking Status (e.g. Cancel or Check-in)
+app.patch('/api/bookings/:id/status', (req, res) => {
+  const { status } = req.body;
+  const booking = bookings.find(b => b.id === req.params.id);
+
+  if (!booking) {
+    return res.status(404).json({ success: false, message: 'Booking record not found.' });
+  }
+
+  const validStatuses = ['CONFIRMED', 'CHECKED_IN', 'CANCELLED'];
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ success: false, message: 'Invalid status provided.' });
+  }
+
+  // Restore capacity on cancellation
+  if (status === 'CANCELLED' && booking.status !== 'CANCELLED') {
+    const { session } = getEventAndSession(booking.eventId, booking.sessionId);
+    if (session) session.bookedCount -= booking.visitorCount;
+  }
+
+  booking.status = status;
+  return res.status(200).json({ success: true, message: `Status updated to ${status}.`, data: booking });
+});
+
+// 7. Delete Booking
+app.delete('/api/bookings/:id', (req, res) => {
+  const index = bookings.findIndex(b => b.id === req.params.id);
+  if (index === -1) {
+    return res.status(404).json({ success: false, message: 'Booking record not found.' });
+  }
+
+  const booking = bookings[index];
+  if (booking.status !== 'CANCELLED') {
+    const { session } = getEventAndSession(booking.eventId, booking.sessionId);
+    if (session) session.bookedCount -= booking.visitorCount;
+  }
+
+  bookings.splice(index, 1);
+  return res.status(200).json({ success: true, message: 'Booking deleted successfully.' });
+});
+
+const PORT = 5000;
+app.listen(PORT, () => console.log(`Server listening at http://localhost:${PORT}`));
