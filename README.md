@@ -80,9 +80,9 @@ Open your browser and go to:
 
 Example:
 
-![Booking Form]("C:\Users\RAKSHITHA ACHAR\OneDrive\Pictures\Screenshots\Screenshot 2026-08-17 233448.png")
+![Booking Form](Screenshot 2026-08-17 233448.png)
 
-![Successful Booking]("C:\Users\RAKSHITHA ACHAR\OneDrive\Pictures\Screenshots\Screenshot 2026-08-17 234126.png")
+![Successful Booking](Screenshot 2026-08-17 234126.png)
 
 
 
