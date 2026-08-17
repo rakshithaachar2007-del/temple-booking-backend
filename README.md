@@ -80,17 +80,15 @@ Open your browser and go to:
 
 Example:
 
-![Available Slots](screenshots/slots.png)
-
-![Booking Form](screenshots/booking.png)
-
-![Successful Booking](screenshots/success.png)
+![Booking Form](c:\Users\RAKSHITHA ACHAR\OneDrive\Pictures\post.png)
+![Successful Booking](c:\Users\RAKSHITHA ACHAR\OneDrive\Pictures\screenshot.png\Screenshot 2026-08-17 234126.png)
 
 # Short Explanation
 
+
    This project provides a simple online system for managing temple
 darshan bookings. The frontend is developed using HTML, CSS and
-JavaScript, while Node.js and Express.js,cors are used for the backend.
+JavaScript, while Node.js and Express.js are used for the backend.
 REST APIs connect the frontend with the backend for slot viewing,
 booking, searching and cancellation.
 
