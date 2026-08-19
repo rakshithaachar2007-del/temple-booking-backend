@@ -80,7 +80,7 @@ Open your browser and go to:
 
 Example:
 
-![Booking Form](Screenshot 2026-08-17 233448.png)
+![Booking Form](blob:https://github.com/f53a10ef-0d1a-478b-af4b-0a5f47a94ec0)
 
 ![Successful Booking](Screenshot 2026-08-17 234126.png)
 
