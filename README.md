@@ -80,9 +80,9 @@ Open your browser and go to:
 
 Example:
 
-![Booking Form](postman1.png)
+![Booking Form](screenshot1.png)
 
-![Successful Booking](Screenshot 2026-08-17 234126.png)
+![Successful Booking](Screenshot2.png)
 
 
 
