@@ -61,12 +61,12 @@ http://localhost:5000
 
 | Method        | Endpoint              | Purpose                     |
 
-| GET           | /api/slots            | Get available darshan slots |
-| POST          | /api/bookings         | Create a new booking        |
-| GET           | /api/bookings         | Fetch all bookings          | 
-| GET           | /api/bookings/:id     | Find booking details        |
-| PUT           | /api/bookings/:id     | Update booking details      |
-| DELETE        | /api/bookings/:id     | Cancel a booking            |
+| GET      ->     /api/slots         ->   Get available darshan slots |
+| POST     ->     /api/bookings      ->   Create a new booking        |
+| GET      ->     /api/bookings      ->   Fetch all bookings          | 
+| GET      ->     /api/bookings/:id  ->   Find booking details        |
+| PUT      ->     /api/bookings/:id  ->   Update booking details      |
+| DELETE   ->     /api/bookings/:id  ->   Cancel a booking            |
 
 
 
