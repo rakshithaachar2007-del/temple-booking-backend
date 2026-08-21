@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🛕 Sri Krishna Temple - Darshan Booking</title>
+  <style>
+    :root {
+      --primary: #d97706;
+      --primary-hover: #b02692;
+      --bg: #fafaf9;
+      --card-bg: #ffffff;
+      --text: #1c1917;
+      --border: #8d9412;
+      --danger: #dc2626;
+      --success: #16a34a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 24px 16px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    header h1 {
+      color: var(--primary);
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      color: var(--primary);
+    }
+
+    .slot-card {
+      border-left: 4px solid var(--primary);
+    }
+
+    .slot-card.full {
+      border-left-color: var(--danger);
+      opacity: 0.7;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .badge-available { background: #dcfce7; color: var(--success); }
+    .badge-full { background: #fee2e2; color: var(--danger); }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    label {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    input, select, button {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid var(--primary);
+      border-color: transparent;
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover { background: var(--primary-hover); }
+    button.btn-danger { background: var(--danger); }
+    button.btn-danger:hover { background: #b91c1c; }
+
+    .alert {
+      padding: 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .alert-success { background: #dcfce7; color: #14532d; border: 1px solid #bbf7d0; }
+    .alert-error { background: #fee2e2; color: #7f1d1d; border: 1px solid #fecaca; }
+
+    .search-box {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .booking-details {
+      background: #f5f5f4;
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>🛕 Sri Krishna Temple</h1>
+      <p>Online Darshan Slot Booking System</p>
+    </header>
+
+    <!-- SECTION 1: AVAILABLE SLOTS -->
+    <section>
+      <h2>Available Time Slots</h2>
+      <div id="slotsGrid" class="grid" style="margin-top: 12px;">Loading slots...</div>
+    </section>
+
+    <div class="grid" style="grid-template-columns: 1fr 1fr;">
+      
+      <!-- SECTION 2: BOOKING FORM -->
+      <section class="card">
+        <h3>Book Darshan Pass</h3>
+        <form id="bookingForm">
+          <div class="form-group">
+            <label for="visitorName">Full Name</label>
+            <input type="text" id="visitorName" placeholder="e.g. Rahul Sharma" required />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="rahul@example.com" required />
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" placeholder="9876543210" required />
+          </div>
+
+          <div class="form-group">
+            <label for="slotId">Select Time Slot</label>
+            <select id="slotId" required>
+              <option value="">-- Choose Slot --</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="visitorCount">Number of Visitors</label>
+            <input type="number" id="visitorCount" min="1" max="10" value="1" required />
+          </div>
+
+          <button type="submit">Confirm Booking</button>
+        </form>
+        <div id="bookingAlert" class="alert"></div>
+      </section>
+
+      <!-- SECTION 3: MANAGE BOOKING -->
+      <section class="card">
+        <h3>Manage Booking</h3>
+        <p style="font-size: 0.85rem; color: #666; margin-bottom: 12px;">Lookup or cancel an existing reservation by Reference ID.</p>
+        
+        <div class="search-box">
+          <input type="number" id="lookupId" placeholder="Booking ID (e.g., 1001)" />
+          <button type="button" style="width: auto;" onclick="lookupBooking()">Find</button>
+        </div>
+
+        <div id="manageAlert" class="alert"></div>
+        <div id="bookingResult"></div>
+      </section>
+
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '/api';
+
+    // Fetch and render slots dynamically
+    async function loadSlots() {
+      try {
+        const res = await fetch(`${API_BASE}/slots`);
+        const slots = await res.json();
+
+        const slotsGrid = document.getElementById('slotsGrid');
+        const slotSelect = document.getElementById('slotId');
+
+        slotsGrid.innerHTML = '';
+        slotSelect.innerHTML = '<option value="">-- Choose Slot --</option>';
+
+        slots.forEach(slot => {
+          const remaining = slot.capacity - slot.booked;
+          const isFull = remaining <= 0;
+
+          // Render Slot Card
+          const card = document.createElement('div');
+          card.className = `card slot-card ${isFull ? 'full' : ''}`;
+          card.innerHTML = `
+            <h3>${slot.date}</h3>
+            <p><strong>Time:</strong> ${slot.time}</p>
+            <p><strong>Available:</strong> ${remaining} / ${slot.capacity} seats</p>
+            <span class="badge ${isFull ? 'badge-full' : 'badge-available'}">
+              ${isFull ? 'FULLY BOOKED' : `${remaining} SPOTS LEFT`}
+            </span>
+          `;
+          slotsGrid.appendChild(card);
+
+          // Populate Dropdown
+          if (!isFull) {
+            const option = document.createElement('option');
+            option.value = slot.id;
+            option.textContent = `${slot.date} | ${slot.time} (${remaining} left)`;
+            slotSelect.appendChild(option);
+          }
+        });
+      } catch (err) {
+        console.error('Failed to load slots:', err);
+      }
+    }
+
+    // Submit Booking Form
+    document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const alertDiv = document.getElementById('bookingAlert');
+
+      const payload = {
+        visitorName: document.getElementById('visitorName').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        slotId: document.getElementById('slotId').value,
+        visitorCount: document.getElementById('visitorCount').value
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/bookings`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        alertDiv.style.display = 'block';
+        if (res.ok) {
+          alertDiv.className = 'alert alert-success';
+          alertDiv.innerHTML = `<strong>Success!</strong> ${data.message}<br><strong>Booking ID:</strong> ${data.booking.id}`;
+          document.getElementById('bookingForm').reset();
+          loadSlots(); // Refresh slot capacity counters
+        } else {
+          alertDiv.className = 'alert alert-error';
+          alertDiv.textContent = data.message || 'Booking failed.';
+        }
+      } catch (err) {
+        alertDiv.style.display = 'block';
+        alertDiv.className = 'alert alert-error';
+        alertDiv.textContent = 'Server connection error. Please try again.';
+      }
+    });
+
+    // Lookup Booking
+    async function lookupBooking() {
+      const bookingId = document.getElementById('lookupId').value;
+      const resultDiv = document.getElementById('bookingResult');
+      const alertDiv = document.getElementById('manageAlert');
+
+      alertDiv.style.display = 'none';
+      resultDiv.innerHTML = '';
+
+      if (!bookingId) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/bookings/${bookingId}`);
+        const data = await res.json();
+
+        if (res.ok) {
+          resultDiv.innerHTML = `
+            <div class="booking-details">
+              <p><strong>ID:</strong> #${data.id}</p>
+              <p><strong>Name:</strong> ${data.visitorName}</p>
+              <p><strong>Date & Time:</strong> ${data.date} (${data.time})</p>
+              <p><strong>Visitors:</strong> ${data.visitorCount}</p>
+              <p><strong>Status:</strong> ${data.status}</p>
+              <button onclick="cancelBooking(${data.id})" class="btn-danger" style="margin-top: 10px;">Cancel Booking</button>
+            </div>
+          `;
+        } else {
+          alertDiv.style.display = 'block';
+          alertDiv.className = 'alert alert-error';
+          alertDiv.textContent = data.message || 'Booking not found.';
+        }
+      } catch (err) {
+        alertDiv.style.display = 'block';
+        alertDiv.className = 'alert alert-error';
+        alertDiv.textContent = 'Error querying booking details.';
+      }
+    }
+
+    // Cancel Booking
+    async function cancelBooking(id) {
+      if (!confirm(`Are you sure you want to cancel booking #${id}?`)) return;
+
+      const resultDiv = document.getElementById('bookingResult');
+      const alertDiv = document.getElementById('manageAlert');
+
+      try {
+        const res = await fetch(`${API_BASE}/bookings/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+
+        alertDiv.style.display = 'block';
+        if (res.ok) {
+          alertDiv.className = 'alert alert-success';
+          alertDiv.textContent = data.message;
+          resultDiv.innerHTML = '';
+          loadSlots(); // Reclaim capacity visual
+        } else {
+          alertDiv.className = 'alert alert-error';
+          alertDiv.textContent = data.message;
+        }
+      } catch (err) {
+        alertDiv.style.display = 'block';
+        alertDiv.className = 'alert alert-error';
+        alertDiv.textContent = 'Cancellation request failed.';
+      }
+    }
+
+    // Initialize page
+    loadSlots();
+  </script>
+</body>
+</html>
