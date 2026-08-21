@@ -56,6 +56,9 @@ http://localhost:5000
 
 # API Endpoints
 
+
+
+
 | Method        | Endpoint              | Purpose                     |
 
 | GET           | /api/slots            | Get available darshan slots |
@@ -64,6 +67,11 @@ http://localhost:5000
 | GET           | /api/bookings/:id     | Find booking details        |
 | PUT           | /api/bookings/:id     | Update booking details      |
 | DELETE        | /api/bookings/:id     | Cancel a booking            |
+
+
+
+
+
 
 # How the System Works
 
