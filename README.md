@@ -80,9 +80,9 @@ http://localhost:5000
 
 Example:
 
-![Booking Form](./temple-booking-backend/post.png)
+![Booking Form](./post.png)
 
-![Successful Booking](./temple-booking-backend/get.png)
+![Successful Booking](./get.png)
 
 # Short Explanation
 
