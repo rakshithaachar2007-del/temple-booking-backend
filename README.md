@@ -52,7 +52,7 @@ Run:
 
 Open your browser and go to:
 
- http://localhost:5000   
+http://localhost:5000
 
 # API Endpoints
 
@@ -80,11 +80,9 @@ Open your browser and go to:
 
 Example:
 
-![Booking Form](screenshot1.png)
+![Booking Form](./temple-booking-backend/post.png)
 
-![Successful Booking](Screenshot2.png)
-
-
+![Successful Booking](./temple-booking-backend/get.png)
 
 # Short Explanation
 
